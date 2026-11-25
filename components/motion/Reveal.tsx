@@ -27,12 +27,14 @@ export function Reveal({ as: Tag = "div", children, className, delay = 0, on = "
         const split = SplitText.create(el, {
           type: by === "lines" ? "lines" : `lines,${by}`,
           mask: "lines",
+          // Masks get class "split-line-mask"; globals.css widens their clip for descenders and accents.
+          linesClass: "split-line",
           autoSplit: true,
           onSplit(self) {
             const targets = by === "lines" ? self.lines : by === "words" ? self.words : self.chars;
             tween?.kill();
             tween = gsap.from(targets, {
-              yPercent: 115,
+              yPercent: 165,
               rotate: by === "chars" ? 8 : 2.5,
               transformOrigin: "0% 100%",
               duration: by === "chars" ? 0.9 : 1.15,

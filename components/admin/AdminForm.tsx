@@ -41,7 +41,7 @@ export function AdminForm({
   return (
     <form
       action={formAction}
-      className={className}
+      className={cn("[&>*]:min-w-0", className)}
       onSubmit={(e) => {
         if (resetOnSuccess) {
           const form = e.currentTarget;

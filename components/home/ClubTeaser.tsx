@@ -18,7 +18,7 @@ export async function ClubTeaser({ locale, t }: { locale: Locale; t: Dictionary 
       <div className="pointer-events-none absolute top-1/2 left-1/2 h-[44vw] w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-gilt/10" />
 
       <div className="relative mx-auto grid max-w-[1600px] gap-16 px-5 md:px-10 lg:grid-cols-12 lg:items-center">
-        <div className="lg:col-span-6">
+        <div className="min-w-0 lg:col-span-6">
           <p className="kicker text-gilt-soft">{t.home.clubKicker}</p>
           <h2 className="mt-8 text-giant">
             <Reveal as="span" className="block">
@@ -51,7 +51,7 @@ export async function ClubTeaser({ locale, t }: { locale: Locale; t: Dictionary 
           </div>
         </div>
 
-        <div className="relative lg:col-span-6">
+        <div className="relative min-w-0 lg:col-span-6">
           <InkWings className="pointer-events-none absolute -top-24 left-1/2 w-[62%] max-w-[360px] -translate-x-1/2 text-gilt/70" weight={1.1} />
           <div className="relative mx-auto max-w-[520px] animate-float">
             <MemberCard
@@ -65,7 +65,7 @@ export async function ClubTeaser({ locale, t }: { locale: Locale; t: Dictionary 
               hint={t.account.cardHint}
             />
           </div>
-          <div className="mx-auto mt-12 flex max-w-[520px] items-center justify-between gap-6">
+          <div className="mx-auto mt-12 flex max-w-[520px] flex-wrap items-center justify-between gap-x-6 gap-y-4">
             <div>
               <p className="font-mono text-[11px] tracking-[0.2em] text-paper/50 uppercase">{t.account.stamps}</p>
               <p className="mt-1 text-sm text-paper/70">{t.club.stampsTitle}</p>

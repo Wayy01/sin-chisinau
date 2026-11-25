@@ -169,22 +169,22 @@ async function Account() {
             Sinners Club →
           </TLink>
         </div>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-6">
           {rewards.map((r) => {
             const affordable = user.halos >= r.cost;
             return (
-              <div key={r.id} className={cn("flex flex-col overflow-hidden rounded-[1.5rem] border border-ink/10 bg-milk", !affordable && "opacity-80")}>
-                <div className="aspect-[4/3] overflow-hidden">
+              <div key={r.id} className={cn("flex overflow-hidden rounded-[1.5rem] border border-ink/10 bg-milk sm:flex-col", !affordable && "opacity-80")}>
+                <div className="w-28 shrink-0 overflow-hidden sm:aspect-[4/3] sm:w-auto">
                   <ProductVisual image={r.image} alt={pick(r, "name", locale)} categorySlug="coffee" />
                 </div>
-                <div className="flex flex-1 flex-col p-5">
+                <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
                   <p className="font-display text-xl leading-tight">{pick(r, "name", locale)}</p>
-                  <p className="mt-1 flex-1 text-xs leading-relaxed text-ink-soft">{pick(r, "desc", locale)}</p>
-                  <p className="mt-4 flex items-center gap-2 font-mono text-sm">
+                  <p className="mt-1 line-clamp-2 flex-1 text-xs leading-relaxed text-ink-soft sm:line-clamp-none">{pick(r, "desc", locale)}</p>
+                  <p className="mt-3 flex items-center gap-2 font-mono text-sm sm:mt-4">
                     <HaloGlyph className="w-6 text-gilt" />
                     {r.cost} {halosWord(r.cost)}
                   </p>
-                  <div className="mt-4">
+                  <div className="mt-3 sm:mt-4">
                     <RedeemButton rewardId={r.id} affordable={affordable} />
                   </div>
                 </div>

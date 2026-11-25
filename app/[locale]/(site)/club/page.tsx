@@ -85,7 +85,7 @@ export default async function ClubPage() {
             <p className="mt-6 max-w-md text-paper/70">{t.club.stampsText}</p>
           </div>
           <div className="flex flex-col items-start gap-6 lg:items-end">
-            <StampRow filled={6} tone="dark" className="scale-150 origin-left lg:origin-right" />
+            <StampRow filled={6} tone="dark" className="[&_svg]:size-10 sm:[&_svg]:size-12" />
             <p className="script text-3xl text-gilt-soft">+1 ☕</p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default async function ClubPage() {
               <p className="mt-10 font-mono text-[11px] tracking-[0.2em] uppercase opacity-60">
                 {tier.min}+ {t.common.halosShort}
               </p>
-              <p className="mt-3 font-display text-5xl italic">{t.club.tiers[tier.key].name}</p>
+              <p className="mt-3 font-display text-4xl italic lg:text-5xl">{t.club.tiers[tier.key].name}</p>
               <p className="mt-4 leading-relaxed opacity-75">{t.club.tiers[tier.key].text}</p>
               {tier.multiplier > 1 && (
                 <span className="absolute top-8 right-8 font-display text-3xl text-gilt">×{tier.multiplier}</span>

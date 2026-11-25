@@ -8,6 +8,7 @@ import { TLink } from "@/components/motion/PageTransition";
 import { Wordmark } from "@/components/art/Wordmark";
 import { LocaleSwitch } from "./LocaleSwitch";
 import { OnPathname, WithPathname } from "@/components/motion/OnPathname";
+import { prefersStill } from "@/components/motion/AutoVideo";
 import { cn } from "@/lib/cn";
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
@@ -16,6 +17,8 @@ export function Header({ account, announcement }: { account: ReactNode; announce
   const { locale, t } = useI18n();
   const bar = useRef<HTMLElement>(null);
   const overlay = useRef<HTMLDivElement>(null);
+  const film = useRef<HTMLVideoElement>(null);
+  const motion = useRef<gsap.core.Timeline | null>(null);
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
   const closeMenu = useCallback(() => setOpen(false), []);
@@ -46,21 +49,27 @@ export function Header({ account, announcement }: { account: ReactNode; announce
   useGSAP(
     () => {
       const el = overlay.current!;
+      // Explicit end values: reopening mid-animation must not capture a half-finished state.
+      motion.current?.kill();
       if (open) {
         window.__lenis?.stop();
-        gsap
+        if (!prefersStill()) film.current?.play().catch(() => {});
+        motion.current = gsap
           .timeline()
           .set(el, { visibility: "visible" })
           .fromTo(el, { clipPath: "circle(0% at 92% 4%)" }, { clipPath: "circle(150% at 92% 4%)", duration: 0.9, ease: "ink" })
-          .from(el.querySelectorAll("[data-item]"), { yPercent: 110, duration: 0.9, stagger: 0.06, ease: "silk" }, "-=0.55")
-          .from(el.querySelectorAll("[data-fade]"), { opacity: 0, y: 12, duration: 0.6, stagger: 0.05 }, "-=0.6");
+          .fromTo(el.querySelectorAll("[data-item]"), { yPercent: 130 }, { yPercent: 0, duration: 0.9, stagger: 0.06, ease: "silk" }, "-=0.55")
+          .fromTo(el.querySelectorAll("[data-fade]"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.05 }, "-=0.6");
       } else if (el.style.visibility === "visible") {
         window.__lenis?.start();
-        gsap.to(el, {
+        motion.current = gsap.timeline().to(el, {
           clipPath: "circle(0% at 92% 4%)",
           duration: 0.6,
           ease: "power3.inOut",
-          onComplete: () => gsap.set(el, { visibility: "hidden" }),
+          onComplete: () => {
+            gsap.set(el, { visibility: "hidden" });
+            film.current?.pause();
+          },
         });
       }
     },
@@ -120,7 +129,8 @@ export function Header({ account, announcement }: { account: ReactNode; announce
 
           <div className="ml-auto flex items-center gap-2 md:gap-4 lg:ml-0">
             <LocaleSwitch className="hidden sm:flex" />
-            {account}
+            {/* On the dark menu overlay the ink "Join" pill would vanish, so it turns paper-coloured. */}
+            <div className={cn(open && "[&_.btn]:[--btn-bg:var(--color-paper)] [&_.btn]:[--btn-text:var(--color-ink)]")}>{account}</div>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -142,8 +152,8 @@ export function Header({ account, announcement }: { account: ReactNode; announce
       >
         <nav className="flex flex-col gap-2" aria-label="Mobile">
           {links.map((link, i) => (
-            <div key={link.href} className="overflow-hidden">
-              <TLink href={link.href} data-item className="flex items-baseline gap-4 font-display text-[clamp(2.6rem,11vw,4.5rem)] leading-[1.02]">
+            <div key={link.href} className="-mb-[0.22em] overflow-hidden pb-[0.22em] font-display text-[clamp(2.6rem,11vw,4.5rem)] leading-[1.02]">
+              <TLink href={link.href} data-item className="flex items-baseline gap-4">
                 <span className="w-8 shrink-0 font-mono text-xs text-gilt">{ROMAN[i]}</span>
                 {link.label}
               </TLink>
@@ -152,14 +162,15 @@ export function Header({ account, announcement }: { account: ReactNode; announce
         </nav>
         <div className="mt-auto flex items-end justify-between gap-6">
           <video
+            ref={film}
             data-fade
             className="arch h-44 w-28 object-cover"
-            src="/media/video/autumn-cinnamon.mp4"
-            poster="/media/video/autumn-cinnamon.jpg"
+            src="/media/video/autumn-cinnamon-540.mp4"
+            poster="/media/video/autumn-cinnamon.webp"
             muted
             loop
             playsInline
-            autoPlay
+            preload="none"
           />
           <div data-fade className="flex flex-col items-end gap-4 text-right">
             <LocaleSwitch tone="dark" />

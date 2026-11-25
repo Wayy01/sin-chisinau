@@ -48,7 +48,7 @@ export default async function Home() {
         title={t.home.filmTitle}
         lead={t.home.filmLead}
         src="/media/video/rainy-day.mp4"
-        poster="/media/video/rainy-day.jpg"
+        poster="/media/video/rainy-day.webp"
       />
       <ArtInterlude note={t.home.artNote} />
       <ClubTeaser locale={locale} t={t} />

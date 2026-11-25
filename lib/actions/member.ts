@@ -47,6 +47,10 @@ export async function updateProfile(_: unknown, form: FormData) {
   if (!user) return { ok: false, message: "auth" };
   const parsed = profileSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { ok: false, message: "invalid" };
-  await db.update(schema.users).set(parsed.data).where(eq(schema.users.id, user.id));
+  const { birthday, ...rest } = parsed.data;
+  await db
+    .update(schema.users)
+    .set(user.birthday ? rest : { ...rest, birthday })
+    .where(eq(schema.users.id, user.id));
   return { ok: true, message: "saved" };
 }

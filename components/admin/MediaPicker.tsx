@@ -51,7 +51,7 @@ export function MediaPicker({
         <div className="min-w-0 flex-1">
           <p className="truncate font-mono text-xs text-ink-soft">{value || t.admin.media.none}</p>
           <div className="mt-2 flex gap-2">
-            <button type="button" onClick={() => setOpen(true)} className="btn btn-line btn-sm">
+            <button type="button" onClick={() => setOpen(true)} className="btn btn-line btn-sm min-w-0 whitespace-normal text-center leading-tight">
               {t.admin.media.pick}
             </button>
             {value && (

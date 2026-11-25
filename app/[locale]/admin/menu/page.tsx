@@ -33,41 +33,45 @@ export default async function AdminMenu() {
               <p className="px-5 py-6 text-sm text-ink-soft">{t.admin.menu.empty}</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] text-sm">
+                <table className="w-full text-sm sm:min-w-[720px]">
                   <thead className="font-mono text-[10px] tracking-[0.15em] text-ink-soft uppercase">
                     <tr className="text-left">
-                      <th className="px-5 py-3 font-normal" colSpan={2}>
+                      <th className="hidden w-16 sm:table-cell" />
+                      <th className="py-3 pr-3 pl-5 font-normal sm:pl-3">
                         {f.nameRo} / {f.nameRu}
                       </th>
-                      <th className="px-3 py-3 font-normal">{f.price}</th>
+                      <th className="hidden px-3 py-3 font-normal sm:table-cell">{f.price}</th>
                       <th className="px-3 py-3 font-normal">{f.available}</th>
-                      <th className="px-3 py-3 font-normal">{t.common.signature}</th>
+                      <th className="hidden px-3 py-3 font-normal sm:table-cell">{t.common.signature}</th>
                       <th className="px-5 py-3" />
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-ink/10">
                     {cat.items.map((item) => (
                       <tr key={item.id} className="hover:bg-paper/60">
-                        <td className="w-16 py-3 pl-5">
+                        <td className="hidden w-16 py-3 pl-5 sm:table-cell">
                           <span className="block size-12 overflow-hidden rounded-lg">
                             <ProductVisual image={item.image} alt="" categorySlug={cat.slug} />
                           </span>
                         </td>
-                        <td className="px-3 py-3">
+                        <td className="py-3 pr-3 pl-5 sm:pl-3">
                           <p className="font-medium">{item.nameRo}</p>
                           <p className="text-ink-soft">{item.nameRu}</p>
+                          <p className="mt-1 font-mono text-xs tabular sm:hidden">
+                            {item.price} {t.common.lei}
+                          </p>
                           {item.tags.length > 0 && <p className="mt-1 font-mono text-[10px] text-gilt uppercase">{item.tags.join(" · ")}</p>}
                         </td>
-                        <td className="px-3 py-3 font-mono tabular">
+                        <td className="hidden px-3 py-3 font-mono whitespace-nowrap tabular sm:table-cell">
                           {item.price} {t.common.lei}
                         </td>
                         <td className="px-3 py-3">
                           <ToggleCell on={item.available} action={toggleItem.bind(null, item.id, "available")} />
                         </td>
-                        <td className="px-3 py-3">
+                        <td className="hidden px-3 py-3 sm:table-cell">
                           <ToggleCell on={item.featured} action={toggleItem.bind(null, item.id, "featured")} />
                         </td>
-                        <td className="px-5 py-3">
+                        <td className="py-3 pr-3 pl-1 sm:px-5">
                           <div className="flex justify-end gap-1">
                             <Link href={`/${locale}/admin/menu/${item.id}`} className="grid size-9 place-items-center rounded-full hover:bg-ink/5" aria-label={t.common.edit}>
                               <PencilSimple size={16} />

@@ -1,7 +1,7 @@
 /**
  * Seeds SIN's real menu, journal, rewards and starter accounts.
  * Run: bun db/seed.ts            (only fills empty tables)
- *      bun db/seed.ts --reset    (wipes content tables first, keeps members)
+ *      bun db/seed.ts --reset    (wipes content tables first; refuses once members have loyalty activity)
  */
 import { sql } from "drizzle-orm";
 import { db, schema } from "./index";
@@ -231,6 +231,12 @@ const qrDrops = [
 
 async function main() {
   if (reset) {
+    // The cascade also empties redemptions, favorites and qr_claims, i.e. vouchers members already paid for.
+    const [{ count: activity }] = await db.select({ count: sql<number>`count(*)::int` }).from(schema.ledger);
+    if (activity > 0 && !process.argv.includes("--force")) {
+      console.error(`Refusing --reset: ${activity} loyalty ledger rows exist. Re-run with --force to wipe vouchers, favorites and QR claims too.`);
+      process.exit(1);
+    }
     console.log("Resetting content tables…");
     await db.execute(sql`truncate sin.menu_items, sin.categories, sin.posts, sin.rewards, sin.qr_drops cascade`);
   }

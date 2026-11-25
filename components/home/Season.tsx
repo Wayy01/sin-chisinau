@@ -5,6 +5,7 @@ import { TLink } from "@/components/motion/PageTransition";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax, Stagger } from "@/components/motion/Effects";
 import { InkSteam } from "@/components/art/Ink";
+import { AutoVideo } from "@/components/motion/AutoVideo";
 
 export function Season({ locale, t, items }: { locale: Locale; t: Dictionary; items: MenuItem[] }) {
   return (
@@ -13,15 +14,11 @@ export function Season({ locale, t, items }: { locale: Locale; t: Dictionary; it
         <div className="relative lg:col-span-5">
           <Parallax speed={0.18} className="relative mx-auto w-[80%] max-w-[420px]">
             <div className="relative aspect-[9/14] overflow-hidden rounded-[999px_999px_2rem_2rem] ring-1 ring-paper/20" data-cursor="♾">
-              <video
+              <AutoVideo
                 className="h-full w-full object-cover"
                 src="/media/video/autumn-drinks.mp4"
-                poster="/media/video/autumn-drinks.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
+                smallSrc="/media/video/autumn-drinks-540.mp4"
+                poster="/media/video/autumn-drinks.webp"
               />
             </div>
             <InkSteam className="absolute -top-10 -right-8 w-20 text-paper/70" weight={1.3} />
@@ -38,11 +35,11 @@ export function Season({ locale, t, items }: { locale: Locale; t: Dictionary; it
           <Stagger className="mt-12 divide-y divide-paper/15 border-y border-paper/15">
             {items.map((item) => (
               <TLink key={item.id} href={`/${locale}/menu#${item.slug}`} className="group flex items-baseline gap-4 py-5">
-                <span className="font-display text-[1.9rem] leading-none transition-transform duration-500 group-hover:translate-x-2">
+                <span className="min-w-0 font-display text-[1.65rem] leading-[1.05] transition-transform duration-500 group-hover:translate-x-2 sm:text-[1.9rem] sm:leading-none">
                   {pick(item, "name", locale)}
                 </span>
                 <span className="leader" />
-                <span className="font-mono text-sm tabular">
+                <span className="shrink-0 font-mono text-sm whitespace-nowrap tabular">
                   {item.price} {t.common.lei}
                 </span>
               </TLink>

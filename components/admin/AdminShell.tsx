@@ -98,7 +98,7 @@ export function AdminShell({ user, children }: { user: { name: string; role: Rol
             </div>
           </div>
         </header>
-        <main className="mx-auto max-w-[1280px] px-5 py-8 md:px-8 md:py-10 print:p-0">{children}</main>
+        <main className="mx-auto max-w-[1280px] px-5 py-8 md:px-8 md:py-10 print:p-0 [&_.grid>*]:min-w-0">{children}</main>
       </div>
 
       {open && (

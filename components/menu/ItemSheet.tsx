@@ -16,6 +16,7 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
   const { locale, t } = useI18n();
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ y: number; at: number; dy: number } | null>(null);
   const [shown, setShown] = useState<MenuEntry | null>(item);
   if (item && item !== shown) setShown(item);
 
@@ -25,13 +26,19 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
     if (item) {
       window.__lenis?.stop();
       gsap.set(el, { visibility: "visible" });
-      gsap.to("[data-scrim]", { opacity: 1, duration: 0.4 });
+      // overwrite: a close that is still running must not hide the sheet we are reopening.
+      gsap.to("[data-scrim]", { opacity: 1, duration: 0.4, overwrite: true });
+      gsap.set(panel.current, { y: 0 });
       gsap.fromTo(
         panel.current,
         mobile ? { yPercent: 100 } : { xPercent: 100 },
-        { yPercent: 0, xPercent: 0, duration: 0.8, ease: "ink" },
+        { yPercent: 0, xPercent: 0, duration: 0.8, ease: "ink", overwrite: true },
       );
-      gsap.from("[data-sheet-in]", { y: 24, opacity: 0, stagger: 0.06, duration: 0.7, delay: 0.3, ease: "silk" });
+      gsap.fromTo(
+        root.current!.querySelectorAll("[data-sheet-in]"),
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.06, duration: 0.7, delay: 0.3, ease: "silk", overwrite: true },
+      );
       const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
       window.addEventListener("keydown", onKey);
       panel.current?.focus();
@@ -39,8 +46,9 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
     }
     if (el.style.visibility === "visible") {
       window.__lenis?.start();
-      gsap.to("[data-scrim]", { opacity: 0, duration: 0.4 });
+      gsap.to("[data-scrim]", { opacity: 0, duration: 0.4, overwrite: true });
       gsap.to(panel.current, {
+        overwrite: true,
         ...(mobile ? { yPercent: 100 } : { xPercent: 100 }),
         duration: 0.55,
         ease: "power3.in",
@@ -51,6 +59,30 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
 
   const halos = shown ? Math.floor(shown.price / 10) : 0;
 
+  // Phones: pull the sheet down to dismiss it, as long as its content is scrolled to the top.
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (window.innerWidth >= 768 || panel.current!.scrollTop > 0) return;
+    drag.current = { y: e.touches[0].clientY, at: performance.now(), dy: 0 };
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!drag.current) return;
+    const dy = e.touches[0].clientY - drag.current.y;
+    if (dy < 0) {
+      drag.current = null;
+      gsap.to(panel.current, { y: 0, duration: 0.2 });
+      return;
+    }
+    drag.current.dy = dy;
+    gsap.set(panel.current, { y: dy });
+  };
+  const onTouchEnd = () => {
+    if (!drag.current) return;
+    const { dy, at } = drag.current;
+    drag.current = null;
+    if (dy > 110 || dy / (performance.now() - at) > 0.5) onClose();
+    else gsap.to(panel.current, { y: 0, duration: 0.35, ease: "power3.out" });
+  };
+
   return (
     <div ref={root} className="fixed inset-0 z-[70]" style={{ visibility: "hidden" }} role="dialog" aria-modal aria-label={shown?.name}>
       <div data-scrim onClick={onClose} className="absolute inset-0 bg-night/50 opacity-0 backdrop-blur-[2px]" />
@@ -58,12 +90,16 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
         ref={panel}
         tabIndex={-1}
         data-lenis-prevent
-        className="absolute inset-x-0 bottom-0 max-h-[92dvh] overflow-y-auto rounded-t-[2rem] bg-paper outline-none md:inset-y-3 md:right-3 md:left-auto md:max-h-none md:w-[min(560px,46vw)] md:rounded-[2rem]"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className="absolute inset-x-0 bottom-0 max-h-[92dvh] overflow-y-auto overscroll-contain rounded-t-[2rem] bg-paper outline-none md:inset-y-3 md:right-3 md:left-auto md:max-h-none md:w-[min(560px,46vw)] md:rounded-[2rem]"
       >
         {shown && (
           <>
             <div className="relative aspect-[4/3.4] overflow-hidden md:aspect-[4/4.2]">
               <ProductVisual image={shown.image} alt={shown.name} categorySlug={shown.categorySlug} />
+              <span aria-hidden className="absolute top-2.5 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-paper/85 shadow-sm md:hidden" />
               <button
                 type="button"
                 onClick={onClose}
@@ -75,7 +111,7 @@ export function ItemSheet({ item, onClose }: { item: MenuEntry | null; onClose: 
             </div>
             <div className="p-7 md:p-9">
               <div data-sheet-in className="flex items-start justify-between gap-4">
-                <h3 className="font-display text-[2.6rem] leading-[0.98]">{shown.name}</h3>
+                <h3 className="min-w-0 font-display text-[clamp(2.1rem,9vw,2.6rem)] leading-[0.98] hyphens-auto [overflow-wrap:anywhere]">{shown.name}</h3>
                 <FavoriteButton itemId={shown.id} />
               </div>
               <p data-sheet-in className="mt-4 leading-relaxed text-ink-soft">{shown.desc}</p>

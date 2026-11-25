@@ -2,6 +2,7 @@ import Link from "next/link";
 import { desc, ilike, or } from "drizzle-orm";
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
 import { db, schema } from "@/db";
+import { requireStaff } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/i18n/config";
 import { tierFor } from "@/lib/loyalty";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/cn";
 
 export default async function AdminMembers({ searchParams }: PageProps<"/[locale]/admin/members">) {
   const [{ q }, { locale, t }] = await Promise.all([searchParams, getT()]);
+  await requireStaff(locale);
   const query = typeof q === "string" ? q.trim() : "";
   const pattern = `%${query}%`;
   const members = await db
@@ -27,16 +29,16 @@ export default async function AdminMembers({ searchParams }: PageProps<"/[locale
         <input name="q" defaultValue={query} placeholder={t.admin.members.search} className="h-12 w-full bg-transparent outline-none" />
       </form>
       <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-milk">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full text-sm md:min-w-[820px]">
           <thead className="font-mono text-[10px] tracking-[0.15em] text-ink-soft uppercase">
             <tr className="text-left">
               <th className="px-5 py-3 font-normal">{t.auth.name}</th>
-              <th className="px-3 py-3 font-normal">{t.admin.fields.code}</th>
+              <th className="hidden px-3 py-3 font-normal md:table-cell">{t.admin.fields.code}</th>
               <th className="px-3 py-3 font-normal">{t.account.tier}</th>
               <th className="px-3 py-3 text-right font-normal">{t.common.halosShort}</th>
-              <th className="px-3 py-3 text-right font-normal">{t.account.lifetime}</th>
-              <th className="px-3 py-3 font-normal">☕</th>
-              <th className="px-5 py-3 font-normal">{t.admin.members.joined}</th>
+              <th className="hidden px-3 py-3 text-right font-normal md:table-cell">{t.account.lifetime}</th>
+              <th className="hidden px-3 py-3 font-normal md:table-cell">☕</th>
+              <th className="hidden px-5 py-3 font-normal md:table-cell">{t.admin.members.joined}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/10">
@@ -46,9 +48,10 @@ export default async function AdminMembers({ searchParams }: PageProps<"/[locale
                   <Link href={`/${locale}/admin/members/${m.id}`} className="font-medium hover:underline">
                     {m.name}
                   </Link>
-                  <p className="text-xs text-ink-soft">{m.email}</p>
+                  <p className="text-xs break-all text-ink-soft">{m.email}</p>
+                  <p className="font-mono text-[11px] text-ink-soft md:hidden">{m.memberCode}</p>
                 </td>
-                <td className="px-3 py-3 font-mono text-xs">{m.memberCode}</td>
+                <td className="hidden px-3 py-3 font-mono text-xs md:table-cell">{m.memberCode}</td>
                 <td className="px-3 py-3">
                   <span className="rounded-full border border-gilt/40 px-2.5 py-0.5 text-xs">{t.club.tiers[tierFor(m.halosLifetime).tier.key].name}</span>
                   {m.role !== "member" && (
@@ -58,9 +61,9 @@ export default async function AdminMembers({ searchParams }: PageProps<"/[locale
                   )}
                 </td>
                 <td className="px-3 py-3 text-right font-display text-xl tabular">{m.halos}</td>
-                <td className="px-3 py-3 text-right font-mono text-xs text-ink-soft tabular">{m.halosLifetime}</td>
-                <td className="px-3 py-3 font-mono text-xs">{m.stamps}/6</td>
-                <td className="px-5 py-3 font-mono text-xs text-ink-soft">{formatDate(m.createdAt, locale, { day: "numeric", month: "short", year: "numeric" })}</td>
+                <td className="hidden px-3 py-3 text-right font-mono text-xs text-ink-soft tabular md:table-cell">{m.halosLifetime}</td>
+                <td className="hidden px-3 py-3 font-mono text-xs md:table-cell">{m.stamps}/6</td>
+                <td className="hidden px-5 py-3 font-mono text-xs text-ink-soft md:table-cell">{formatDate(m.createdAt, locale, { day: "numeric", month: "short", year: "numeric" })}</td>
               </tr>
             ))}
           </tbody>

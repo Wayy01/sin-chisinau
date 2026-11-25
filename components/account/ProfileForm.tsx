@@ -28,7 +28,8 @@ export function ProfileForm({ name, phone, birthday }: { name: string; phone: st
       </label>
       <label className="block">
         <span className="font-mono text-[10px] tracking-[0.2em] text-ink-soft uppercase">{t.auth.birthday}</span>
-        <input name="birthday" type="date" defaultValue={birthday ?? ""} className="field" />
+        <input name="birthday" type="date" defaultValue={birthday ?? ""} disabled={!!birthday} className="field disabled:opacity-60" />
+        {birthday && <span className="mt-2 block text-xs text-ink-soft">{t.auth.birthdayLocked}</span>}
       </label>
       <div className="sm:col-span-3">
         <button type="submit" disabled={pending} className="btn btn-line btn-sm">
