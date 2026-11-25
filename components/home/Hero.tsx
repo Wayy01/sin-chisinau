@@ -10,6 +10,7 @@ import { Magnetic } from "@/components/motion/Effects";
 import { INTRO_EVENT } from "@/components/motion/Preloader";
 import { InkArrow, InkCroissant, InkSparkle, PaintWash } from "@/components/art/Ink";
 import { OpenStatus } from "@/components/site/OpenStatus";
+import { AutoVideo } from "@/components/motion/AutoVideo";
 
 export function Hero({ lead, hours }: { lead: string; hours: string }) {
   const { locale, t } = useI18n();
@@ -80,15 +81,15 @@ export function Hero({ lead, hours }: { lead: string; hours: string }) {
             <p data-fade className="max-w-md text-[1.05rem] leading-relaxed text-ink-soft">
               {lead || t.home.heroLead}
             </p>
-            <div data-fade className="flex flex-wrap gap-3">
-              <Magnetic>
-                <TLink href={`/${locale}/menu`} className="btn btn-lg" data-cursor="→">
+            <div data-fade className="grid gap-3 sm:flex sm:flex-wrap">
+              <Magnetic className="sm:inline-block">
+                <TLink href={`/${locale}/menu`} className="btn btn-lg w-full sm:w-auto" data-cursor="→">
                   {t.home.ctaMenu}
                   <ArrowRight size={16} />
                 </TLink>
               </Magnetic>
-              <Magnetic>
-                <TLink href={`/${locale}/club`} className="btn btn-line btn-lg">
+              <Magnetic className="sm:inline-block">
+                <TLink href={`/${locale}/club`} className="btn btn-line btn-lg w-full sm:w-auto">
                   {t.home.ctaClub}
                 </TLink>
               </Magnetic>
@@ -99,20 +100,16 @@ export function Hero({ lead, hours }: { lead: string; hours: string }) {
         <div className="relative lg:col-span-5">
           <div className="relative mx-auto w-[78%] max-w-[460px] sm:w-[60%] lg:w-full">
             <div data-arch className="arch relative aspect-[3/4.4] overflow-hidden bg-paper-2" data-cursor="SIN">
-              <video
+              <AutoVideo
                 className="absolute inset-0 h-full w-full object-cover"
                 src="/media/video/autumn-cinnamon.mp4"
-                poster="/media/video/autumn-cinnamon.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
+                smallSrc="/media/video/autumn-cinnamon-540.mp4"
+                poster="/media/video/autumn-cinnamon.webp"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-night/35 via-transparent to-transparent" />
             </div>
 
-            <div data-badge className="absolute -bottom-8 -left-10 size-36 md:-left-16 md:size-44">
+            <div data-badge className="absolute -bottom-8 -left-6 size-32 sm:-left-10 sm:size-36 md:-left-16 md:size-44">
               <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full animate-spin-slow text-ink">
                 <defs>
                   <path id="badge-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
@@ -126,7 +123,7 @@ export function Hero({ lead, hours }: { lead: string; hours: string }) {
               </div>
             </div>
 
-            <div data-note className="absolute top-[18%] -left-6 hidden -translate-x-full items-end gap-1 text-ink-soft md:flex">
+            <div data-note className="absolute top-[18%] -left-6 hidden -translate-x-full items-end gap-1 text-ink-soft lg:flex">
               <span data-fade className="script -rotate-6 text-2xl whitespace-nowrap">
                 {t.home.heroNote}
               </span>

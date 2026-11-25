@@ -147,7 +147,7 @@ const ro = {
       { q: "Costă ceva?", a: "Nu. Cardul e gratuit și trăiește în telefonul tău." },
       { q: "Expiră aureolele?", a: "Nu expiră cât timp vii măcar o dată la 12 luni." },
       { q: "Pot folosi aureolele cu alte reduceri?", a: "Da, recompensele se combină cu ofertele de sezon." },
-      { q: "Ce primesc de ziua mea?", a: "100 de aureole automat, iar Sfinții primesc și un desert." },
+      { q: "Ce primesc de ziua mea?", a: "100 de aureole automat (după primele 30 de zile în club), iar Sfinții primesc și un desert." },
     ],
   },
   journal: {
@@ -224,7 +224,9 @@ const ro = {
       weak: "Parola trebuie să aibă cel puțin 8 caractere.",
       name: "Spune-ne cum te cheamă.",
       email: "Email invalid.",
+      rate: "Prea multe încercări. Mai încearcă peste câteva minute.",
     },
+    birthdayLocked: "Ziua de naștere se setează o singură dată.",
   },
   account: {
     kicker: "Contul meu",
@@ -282,6 +284,11 @@ const ro = {
     explore: "Explorează",
     contact: "Contact",
     follow: "Urmărește",
+  },
+  error: {
+    title: "Ceva n-a ieșit din cuptor.",
+    text: "A apărut o eroare de partea noastră. Încearcă din nou — de obicei ajută.",
+    retry: "Încearcă din nou",
   },
   notFound: {
     title: "Pagina asta a fost mâncată.",

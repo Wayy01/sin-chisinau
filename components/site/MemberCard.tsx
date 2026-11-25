@@ -110,7 +110,7 @@ export function MemberCard({ name, tierName, halos, memberCode, qrSvg, halosLabe
           <div className="flex min-w-0 flex-col gap-2">
             <Wordmark className="w-14 text-cocoa" />
             <p className="font-mono text-sm tracking-[0.18em]">{memberCode}</p>
-            {hint && <p className="text-xs leading-relaxed text-ink-soft">{hint}</p>}
+            {hint && <p className="text-xs leading-relaxed text-ink-soft max-[359px]:hidden">{hint}</p>}
           </div>
         </div>
       </div>

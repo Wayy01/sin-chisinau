@@ -7,8 +7,12 @@ import { db, schema } from "@/db";
 import { createSession, destroySession, hashPassword, newMemberCode, verifyPassword } from "@/lib/auth";
 import { grantWelcome } from "@/lib/loyalty";
 import { isLocale } from "@/lib/i18n/config";
+import { clear, clientIp, hit, isLimited } from "@/lib/rate-limit";
 
-export type AuthState = { error?: "invalid" | "exists" | "weak" | "name" | "email"; email?: string; name?: string } | null;
+const FIFTEEN_MIN = 15 * 60_000;
+const HOUR = 60 * 60_000;
+
+export type AuthState = { error?: "invalid" | "exists" | "weak" | "name" | "email" | "rate"; email?: string; name?: string } | null;
 
 function safeNext(next: unknown, locale: string) {
   const fallback = `/${locale}/account`;
@@ -25,8 +29,16 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   const locale = localeOf(form);
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const password = String(form.get("password") ?? "");
+  // Checked before scrypt runs, so a flood of guesses cannot tie up the hashing thread pool either.
+  const ip = await clientIp();
+  const keys = [`login:email:${email}`, ...(ip ? [`login:ip:${ip}`] : [])];
+  if (isLimited(keys[0], 8, FIFTEEN_MIN) || (ip && isLimited(keys[1], 40, FIFTEEN_MIN))) return { error: "rate", email };
   const [user] = await db.select().from(schema.users).where(eq(schema.users.email, email)).limit(1);
-  if (!user || !(await verifyPassword(password, user.passwordHash))) return { error: "invalid", email };
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    keys.forEach((k) => hit(k, FIFTEEN_MIN));
+    return { error: "invalid", email };
+  }
+  clear(keys[0]);
   await createSession(user.id);
   redirect(safeNext(form.get("next"), locale));
 }
@@ -52,6 +64,8 @@ export async function register(_: AuthState, form: FormData): Promise<AuthState>
     return { error: code ?? "invalid", email: String(raw.email ?? ""), name: String(raw.name ?? "") };
   }
   const { name, email, password, phone, birthday } = parsed.data;
+  const ip = await clientIp();
+  if (ip && isLimited(`register:ip:${ip}`, 6, HOUR)) return { error: "rate", email, name };
   const [exists] = await db.select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.email, email));
   if (exists) return { error: "exists", email, name };
 
@@ -67,6 +81,7 @@ export async function register(_: AuthState, form: FormData): Promise<AuthState>
       locale,
     })
     .returning();
+  if (ip) hit(`register:ip:${ip}`, HOUR);
   await grantWelcome(user.id);
   await createSession(user.id);
   redirect(safeNext(form.get("next"), locale));

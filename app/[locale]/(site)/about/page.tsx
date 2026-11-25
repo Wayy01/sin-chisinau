@@ -92,9 +92,9 @@ export default async function AboutPage() {
           <ReelStrip
             className="mt-16 md:mb-16"
             reels={[
-              { src: "/media/video/autumn-cinnamon.mp4", poster: "/media/video/autumn-cinnamon.jpg", label: "Cinnamon season" },
-              { src: "/media/video/autumn-drinks.mp4", poster: "/media/video/autumn-drinks.jpg", label: t.home.seasonTitle },
-              { src: "/media/video/rainy-day.mp4", poster: "/media/video/rainy-day.jpg", label: "Rainy day" },
+              { src: "/media/video/autumn-cinnamon.mp4", smallSrc: "/media/video/autumn-cinnamon-540.mp4", poster: "/media/video/autumn-cinnamon.webp", label: "Cinnamon season" },
+              { src: "/media/video/autumn-drinks.mp4", smallSrc: "/media/video/autumn-drinks-540.mp4", poster: "/media/video/autumn-drinks.webp", label: t.home.seasonTitle },
+              { src: "/media/video/rainy-day.mp4", smallSrc: "/media/video/rainy-day-540.mp4", poster: "/media/video/rainy-day.webp", label: "Rainy day" },
             ]}
           />
         </div>

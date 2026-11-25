@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { getCurrentUser } from "@/lib/auth";
@@ -12,6 +13,7 @@ export const metadata: Metadata = { robots: { index: false } };
 
 async function Drop({ params }: { params: Promise<{ code: string }> }) {
   const [{ code: raw }, { locale, t }, user] = await Promise.all([params, getT(), getCurrentUser()]);
+  await connection();
   const code = decodeURIComponent(raw).toUpperCase();
   const [drop] = await db.select().from(schema.qrDrops).where(eq(schema.qrDrops.code, code));
   const now = new Date();

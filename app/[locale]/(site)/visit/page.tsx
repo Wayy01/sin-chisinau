@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { OpenStatus } from "@/components/site/OpenStatus";
 import { DrawOnScroll, Stagger } from "@/components/motion/Effects";
 import { InkCup, InkPaw, InkSteam, InkWheat } from "@/components/art/Ink";
+import { AutoVideo } from "@/components/motion/AutoVideo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -58,15 +59,15 @@ export default async function VisitPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1600px] px-5 py-28 md:px-10">
-        <Stagger className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mx-auto max-w-[1600px] px-5 py-20 md:px-10 md:py-28">
+        <Stagger className="grid gap-3 min-[360px]:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {t.visit.perks.map((perk, i) => {
             const Ink = perkInk[i];
             return (
-              <DrawOnScroll key={perk.title} className="rounded-[2rem] border border-ink/10 p-8">
-                <Ink className="h-16 w-auto text-cocoa" weight={1.3} />
-                <p className="mt-8 font-display text-3xl">{perk.title}</p>
-                <p className="mt-3 leading-relaxed text-ink-soft">{perk.text}</p>
+              <DrawOnScroll key={perk.title} className="rounded-[1.5rem] border border-ink/10 p-5 sm:rounded-[2rem] sm:p-8">
+                <Ink className="h-11 w-auto text-cocoa sm:h-16" weight={1.3} />
+                <p className="mt-5 font-display text-[1.4rem] leading-tight hyphens-auto sm:mt-8 sm:text-3xl">{perk.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft sm:mt-3 sm:text-base">{perk.text}</p>
               </DrawOnScroll>
             );
           })}
@@ -79,7 +80,7 @@ export default async function VisitPage() {
           <img src="/media/img/storefront.webp" alt="SIN" loading="lazy" className="h-full w-full object-cover" />
         </div>
         <div className="aspect-[4/3] overflow-hidden rounded-[2rem]">
-          <video src="/media/video/rainy-day.mp4" poster="/media/video/rainy-day.jpg" autoPlay muted loop playsInline preload="metadata" className="h-full w-full object-cover" />
+          <AutoVideo src="/media/video/rainy-day.mp4" smallSrc="/media/video/rainy-day-540.mp4" poster="/media/video/rainy-day.webp" className="h-full w-full object-cover" />
         </div>
       </section>
     </>

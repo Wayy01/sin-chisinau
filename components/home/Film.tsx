@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { AutoVideo } from "@/components/motion/AutoVideo";
 
 /** A small arch of film that opens into the whole screen as you scroll through it. */
 export function Film({
@@ -51,7 +52,7 @@ export function Film({
         <span>Rainy day · SIN</span>
       </div>
       <div data-frame className="absolute inset-0 overflow-hidden" style={{ clipPath: "inset(0% 0% 0% 0%)" }}>
-        <video className="h-full w-full object-cover" src={src} poster={poster} autoPlay muted loop playsInline preload="metadata" />
+        <AutoVideo className="h-full w-full object-cover" src={src} poster={poster} />
         <div className="absolute inset-0 bg-gradient-to-t from-night/75 via-night/10 to-transparent" />
         <div data-copy className="absolute inset-x-0 bottom-0 px-5 pb-14 text-paper md:px-10 md:pb-20">
           <div className="mx-auto max-w-[1600px]">

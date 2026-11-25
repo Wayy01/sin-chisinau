@@ -16,6 +16,9 @@ export async function GET(request: Request, { params }: RouteContext<"/uploads/[
     "Content-Type": MIME[path.extname(file).toLowerCase()] ?? "application/octet-stream",
     "Cache-Control": "public, max-age=31536000, immutable",
     "Accept-Ranges": "bytes",
+    // An uploaded SVG opened directly would otherwise run its scripts with the site's cookies.
+    "Content-Security-Policy": "default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'; sandbox",
+    "X-Content-Type-Options": "nosniff",
   });
 
   const range = request.headers.get("range")?.match(/bytes=(\d*)-(\d*)/);

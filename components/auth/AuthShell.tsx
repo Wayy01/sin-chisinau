@@ -9,7 +9,7 @@ export function AuthShell({ title, lead, note, children }: { title: string; lead
     <section className="grid min-h-dvh lg:grid-cols-2">
       <div className="relative hidden overflow-hidden bg-night lg:block">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/media/art/putti.webp" alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+        <img src="/media/art/putti.webp" alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-night/10" />
         <div className="absolute inset-x-0 bottom-0 p-12 text-paper">
           <InkWings className="mb-6 w-40 text-gilt" weight={1.2} />

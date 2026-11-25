@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db, schema } from "@/db";
-import { getCurrentUser } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/i18n/config";
 import { tierFor } from "@/lib/loyalty";
@@ -15,7 +15,8 @@ import { HaloGlyph } from "@/components/art/Wordmark";
 import { cn } from "@/lib/cn";
 
 export default async function MemberDetail({ params }: PageProps<"/[locale]/admin/members/[id]">) {
-  const [{ id }, { locale, t }, me] = await Promise.all([params, getT(), getCurrentUser()]);
+  const [{ id }, { locale, t }] = await Promise.all([params, getT()]);
+  const me = await requireStaff(locale);
   if (!z.uuid().safeParse(id).success) notFound();
   const [[m], ledger, vouchers] = await Promise.all([
     db.select().from(schema.users).where(eq(schema.users.id, id)),
@@ -23,8 +24,9 @@ export default async function MemberDetail({ params }: PageProps<"/[locale]/admi
     db.select().from(schema.redemptions).where(eq(schema.redemptions.userId, id)).orderBy(desc(schema.redemptions.createdAt)).limit(50),
   ]);
   if (!m) notFound();
-  const isAdmin = me?.role === "admin";
+  const isAdmin = me.role === "admin";
   const { tier } = tierFor(m.halosLifetime);
+  const when = (d: Date) => formatDate(d, locale, { day: "numeric", month: "short", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
     <>
@@ -84,15 +86,14 @@ export default async function MemberDetail({ params }: PageProps<"/[locale]/admi
         <ul className="divide-y divide-ink/10">
           {ledger.map((l) => (
             <li key={l.id} className="flex items-center gap-4 py-3 text-sm">
-              <span className="w-40 shrink-0 font-mono text-[11px] text-ink-soft">
-                {formatDate(l.createdAt, locale, { day: "numeric", month: "short", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
-              </span>
-              <span className="flex-1">
+              <span className="hidden w-40 shrink-0 font-mono text-[11px] text-ink-soft sm:block">{when(l.createdAt)}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-mono text-[11px] text-ink-soft sm:hidden">{when(l.createdAt)}</span>
                 {t.account.kinds[l.kind]}
                 {l.amountLei ? ` · ${l.amountLei} ${t.common.lei}` : ""}
                 {l.note ? <span className="text-ink-soft"> · {l.note}</span> : null}
               </span>
-              <span className={cn("font-display text-xl tabular", l.delta >= 0 ? "text-sage-deep" : "text-cherry")}>
+              <span className={cn("shrink-0 font-display text-xl tabular", l.delta >= 0 ? "text-sage-deep" : "text-cherry")}>
                 {l.delta > 0 ? "+" : ""}
                 {l.delta}
               </span>

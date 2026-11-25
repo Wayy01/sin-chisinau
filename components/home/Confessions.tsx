@@ -62,7 +62,7 @@ export function Confessions({ items }: { items: ShowcaseItem[] }) {
 
   return (
     <section ref={root} className="relative overflow-hidden bg-paper py-20 lg:flex lg:h-dvh lg:items-center lg:py-0">
-      <div data-track className="flex w-max gap-6 px-5 md:gap-10 md:px-10 max-lg:w-full max-lg:snap-x max-lg:snap-mandatory max-lg:overflow-x-auto max-lg:no-scrollbar">
+      <div data-track className="flex w-max gap-6 px-5 md:gap-10 md:px-10 max-lg:w-full max-lg:snap-x max-lg:snap-mandatory max-lg:overflow-x-auto max-lg:no-scrollbar lg:motion-reduce:w-full lg:motion-reduce:snap-x lg:motion-reduce:overflow-x-auto">
         <div className="flex w-[82vw] shrink-0 snap-start flex-col justify-center sm:w-[60vw] lg:w-[36vw] lg:pr-10">
           <p className="kicker text-gilt">{t.home.confessionsKicker}</p>
           <Reveal as="h2" className="mt-6 text-[clamp(3rem,5.4vw,5.6rem)] leading-[0.95]">

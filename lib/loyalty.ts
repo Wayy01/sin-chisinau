@@ -6,6 +6,8 @@ import { randomCode } from "@/lib/crypto";
 export const LEI_PER_HALO = 10;
 export const WELCOME_HALOS = 50;
 export const BIRTHDAY_HALOS = 100;
+/** New accounts wait this long for the birthday gift, so it cannot be farmed by signing up on the day. */
+export const BIRTHDAY_MIN_MEMBER_DAYS = 30;
 export const STAMPS_FOR_FREE_COFFEE = 6;
 
 export const TIERS = [
@@ -158,21 +160,26 @@ export async function claimQr(userId: string, rawCode: string): Promise<ClaimRes
   });
 }
 
-/** Awards the yearly birthday gift the first time the member shows up on their birthday. */
+/** Awards the yearly birthday gift the first time the member shows up on their birthday (Chișinău date). */
 export async function maybeBirthdayBonus(user: typeof schema.users.$inferSelect) {
   if (!user.birthday) return false;
   const now = new Date();
-  const [, month, day] = user.birthday.split("-").map(Number);
-  if (now.getMonth() + 1 !== month || now.getDate() !== day) return false;
-  if (user.lastBirthdayYear === now.getFullYear()) return false;
-  await db.transaction(async (tx) => {
-    await tx
+  const [year, month, day] = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Chisinau" }).format(now).split("-").map(Number);
+  const [, bMonth, bDay] = user.birthday.split("-").map(Number);
+  if (bMonth !== month || bDay !== day) return false;
+  if (user.lastBirthdayYear === year) return false;
+  if (now.getTime() - user.createdAt.getTime() < BIRTHDAY_MIN_MEMBER_DAYS * 864e5) return false;
+  return db.transaction(async (tx) => {
+    // Conditional claim of the year: two tabs loading /account at once must not both pay out.
+    const claimed = await tx
       .update(schema.users)
-      .set({ lastBirthdayYear: now.getFullYear() })
-      .where(eq(schema.users.id, user.id));
+      .set({ lastBirthdayYear: year })
+      .where(and(eq(schema.users.id, user.id), sql`${schema.users.lastBirthdayYear} is distinct from ${year}`))
+      .returning({ id: schema.users.id });
+    if (!claimed.length) return false;
     await credit(tx, user.id, BIRTHDAY_HALOS, "birthday");
+    return true;
   });
-  return true;
 }
 
 export async function consumeVoucher(code: string, staffId: string) {

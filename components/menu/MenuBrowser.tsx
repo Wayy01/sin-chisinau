@@ -72,7 +72,10 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
           onToggle: (self) => self.isActive && setActive(section.dataset.category!),
         }),
       );
-      gsap.from("[data-rail] > *", { y: 30, opacity: 0, stagger: 0.05, duration: 0.9, ease: "silk", delay: 0.2 });
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.fromTo("[data-rail] > *", { y: 30, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.05, duration: 0.9, ease: "silk", delay: 0.2 });
+      });
       return () => triggers.forEach((st) => st.kill());
     },
     { scope: root, dependencies: [filtered.length] },
@@ -163,16 +166,18 @@ export function MenuBrowser({ categories }: { categories: MenuCategory[] }) {
                   onClick={() => setOpen(item)}
                   onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpen(item))}
                   data-cursor={t.common.readMore}
-                  className={cn("group flex cursor-pointer items-center gap-5 py-6 md:gap-7", !item.available && "opacity-50")}
+                  className={cn("group flex cursor-pointer items-center gap-4 py-5 sm:gap-5 sm:py-6 md:gap-7", !item.available && "opacity-50")}
                 >
-                  <span className="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-paper-2 md:size-24">
+                  <span className="relative size-[4.5rem] shrink-0 overflow-hidden rounded-2xl bg-paper-2 sm:size-20 md:size-24">
                     <ProductVisual image={item.image} alt={item.name} categorySlug={item.categorySlug} className="transition-transform duration-700 group-hover:scale-110" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline gap-3">
-                      <span className="font-display text-[1.6rem] leading-tight transition-colors group-hover:text-cocoa md:text-[1.9rem]">{item.name}</span>
+                      <span className="min-w-0 font-display text-[1.45rem] leading-[1.08] hyphens-auto [overflow-wrap:anywhere] transition-colors group-hover:text-cocoa sm:text-[1.6rem] sm:leading-tight md:text-[1.9rem]">
+                        {item.name}
+                      </span>
                       <span className="leader hidden sm:block" />
-                      <span className="shrink-0 font-mono text-sm tabular">
+                      <span className="ml-auto shrink-0 font-mono text-sm whitespace-nowrap tabular">
                         {item.price} {t.common.lei}
                       </span>
                     </span>

@@ -177,6 +177,13 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-gilt) 22%, transparent);
   }
 
+  /* SplitText line masks: the display sizes run at line-heights under 1, so a plain overflow clip
+     shaves descenders (р, д, ș, ț, g) and accents (Ă, Î, Й). Clip a little outside the box instead. */
+  .split-line-mask {
+    overflow: visible !important;
+    clip-path: inset(-0.35em -0.2em -0.4em -0.2em);
+  }
+
   .no-scrollbar { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
 }

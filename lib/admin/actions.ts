@@ -407,6 +407,7 @@ export async function lookupCode(raw: string): Promise<Lookup> {
 
 export async function awardAtTill(memberId: string, amountLei: number, coffees: number) {
   const staff = await guard("staff");
+  if (memberId === staff.id) throw new Error("own-card");
   const amount = z.number().int().min(1).max(100000).parse(amountLei);
   const cups = z.number().int().min(0).max(50).parse(coffees);
   return awardPurchase({ userId: z.uuid().parse(memberId), amountLei: amount, coffees: cups, staffId: staff.id });

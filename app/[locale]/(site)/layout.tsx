@@ -25,7 +25,9 @@ export default async function SiteLayout({ children }: LayoutProps<"/[locale]">)
           </Suspense>
         }
       />
-      <main id="main">{children}</main>
+      <main id="main" className="overflow-x-clip">
+        {children}
+      </main>
       <Footer />
       <Grain />
     </>
